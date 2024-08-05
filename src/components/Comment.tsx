@@ -101,6 +101,48 @@ interface CommentProps {
   onLikeChange: (id: number, isLiked: boolean) => void;
 }
 
+
+
+const getRelativeTime = (timestamp: string) => {
+    const now = new Date();
+    const commentDate = new Date(timestamp);
+    const difference = now.getTime() - commentDate.getTime();
+  
+    const seconds = Math.floor(difference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+  
+    if (hours < 12) {
+      if (hours >= 1) {
+        let hourLabel = 'часов назад';
+        if (hours % 10 === 1 && hours !== 11) {
+          hourLabel = 'час назад';
+        } else if ([2, 3, 4].includes(hours % 10) && ![12, 13, 14].includes(hours)) {
+          hourLabel = 'часа назад';
+        }
+        return `${hours} ${hourLabel}`;
+      } else if (minutes >= 1) {
+        let minuteLabel = 'минут назад';
+        if (minutes % 10 === 1 && minutes !== 11) {
+          minuteLabel = 'минута назад';
+        } else if ([2, 3, 4].includes(minutes % 10) && ![12, 13, 14].includes(minutes)) {
+          minuteLabel = 'минуты назад';
+        }
+        return `${minutes} ${minuteLabel}`;
+      } else {
+        let secondLabel = 'секунд назад';
+        if (seconds % 10 === 1 && seconds !== 11) {
+          secondLabel = 'секунда назад';
+        } else if ([2, 3, 4].includes(seconds % 10) && ![12, 13, 14].includes(seconds)) {
+          secondLabel = 'секунды назад';
+        }
+        return `${seconds} ${secondLabel}`;
+      }
+    } else {
+      return commentDate.toLocaleString(); // Если прошло больше 12 часов, показываем обычное время
+    }
+  };
+  
 const Comment: React.FC<CommentProps> = ({ comment, level = 0, onLikeChange }) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(comment.likes);
@@ -134,7 +176,7 @@ const Comment: React.FC<CommentProps> = ({ comment, level = 0, onLikeChange }) =
   const author = authorsData.find(author => author.id === comment.author);
   if (!author) return null;
 
-  const formattedTime = new Date(comment.created).toLocaleString(); // Форматируем время
+  const relativeTime = getRelativeTime(comment.created); // Используем новую функцию для вычисления времени
 
   return (
     <CommentWrapper level={level}>
@@ -145,11 +187,11 @@ const Comment: React.FC<CommentProps> = ({ comment, level = 0, onLikeChange }) =
         <CommentHeader>
           <strong>{author.name}</strong>
           <LikesWrapper>
-            <HeartIcon liked={liked} style={{ width: '20px' }} onClick={handleLike} />
+            <HeartIcon liked={liked}  style={{ width: '20px' }} onClick={handleLike} />
             <span style={{ marginLeft: '8px' }}>{likesCount}</span>
           </LikesWrapper>
         </CommentHeader>
-        <TimeStamp>{formattedTime}</TimeStamp>
+        <TimeStamp>{relativeTime}</TimeStamp>
         <div>{comment.text}</div>
       </CommentContent>
     </CommentWrapper>

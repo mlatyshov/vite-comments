@@ -1,0 +1,16 @@
+
+body {
+
+  width:100%;
+  background-image: url('/src/assets/images/background.webp');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh; /* фон занимает всю высоту экрана */
+  padding: 20px;
+  
+}
+
+@media (max-width: 600px) {
+    body {padding: 2px;}
+  }
+
